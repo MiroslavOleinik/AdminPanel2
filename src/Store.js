@@ -1,9 +1,25 @@
-const initialState = JSON.parse(localStorage.initialState);
-
-function setNewLocalStorage(state) {
-  localStorage.clear();
-  localStorage.setItem('initialState', JSON.stringify(state));
+const baseState = {
+  loginStatus: false,
+  currentUser: {},
+  roles:['user', 'admin', 'moderator'],
+  users: [{
+    id: 0,
+    login: 'admin',
+    password: 'password',
+    email: 'ollmirik@gmail.com',
+    role: 'admin',
+    deactivated: false,
+  },],
 }
+
+function setNewLocalStorage(state = baseState) {
+  localStorage.setItem('initialState', JSON.stringify({
+    ...state,
+  }));
+  return localStorage.initialState;
+}
+
+const initialState = JSON.parse(setNewLocalStorage());
 
 export function logIn(value, login) {
   return {

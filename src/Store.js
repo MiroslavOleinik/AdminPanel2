@@ -1,36 +1,8 @@
-const initialState = {
-  loginStatus: true,
-  roles: ['user', 'admin', 'moderator',],
-  currentUser: {
-    id: 0,
-    login: 'admin',
-    password: 'password',
-    role: 'admin',
-    email: 'ollmirik@gmail.com',
-    deactivated: false,
-  },
-  users: [{
-    id: 0,
-    login: 'admin',
-    password: 'password',
-    role: 'admin',
-    email: 'ollmirik@gmail.com',
-    deactivated: false,
-  },{
-    id: 1,
-    login: 'user',
-    password: 'password',
-    role: 'user',
-    email: 'ollmirik@gmail.com',
-    deactivated: false,
-  },{
-    id: 2,
-    login: 'moderator',
-    password: 'password',
-    role: 'moderator',
-    email: 'ollmirik@gmail.com',
-    deactivated: false,
-  }],
+const initialState = JSON.parse(localStorage.initialState);
+
+function setNewLocalStorage(state) {
+  localStorage.clear();
+  localStorage.setItem('initialState', JSON.stringify(state));
 }
 
 export function logIn(value, login) {
@@ -94,44 +66,52 @@ export function adminPanel(state = initialState, action) {
         }
         return null;
       });
-      return {
+      state = {
         ...state,
         currentUser: currentUser,
         loginStatus: payload,
       };
+      setNewLocalStorage(state);
+      return state;
     case 'DEACTIVATE_USER':
       users.forEach((element) => {
         if (element.id === payload) {
           element.deactivated = true;
         }
-        console.log(element)
       });
-      return {
+      state = {
         ...state,
         users: users,
       };
+      setNewLocalStorage(state);
+      return state;
     case 'ACTIVATE_USER':
       users.forEach((element) => {
         if (element.id === payload) {
           element.deactivated = false;
         }
-        console.log(element)
       });
-      return {
+      state = {
         ...state,
         users: users,
       };
+      setNewLocalStorage(state);
+      return state;
     case 'ADD_USER':
-      return {
+      state = {
         ...state,
         users: [...users, payload],
       };
+      setNewLocalStorage(state);
+      return state;
     case 'LOG_OUT':
-      return {
+      state = {
         ...state,
         loginStatus: payload.loginStatus,
         currentUser: payload.currentUser,
       };
+      setNewLocalStorage(state);
+      return state;
     case 'EDIT_USER':
       const updatedUsers = users.map((element) => {
         if(payload.userId === element.id) {
@@ -140,11 +120,14 @@ export function adminPanel(state = initialState, action) {
           return element;
         }
       });
-      return {
+      state = {
         ...state,
         users: [ ...updatedUsers ],
-      }
+      };
+      setNewLocalStorage(state);
+      return state;
     default:
+      setNewLocalStorage(state);
       return state;
   }
 }

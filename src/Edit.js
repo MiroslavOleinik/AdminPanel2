@@ -18,18 +18,26 @@ class Edit extends Component {
   state = {
     message: '',
     userData: {},
+    formValue: {
+      login: '',
+      password: '',
+      email: '',
+    },
   }
 
   componentDidMount() {
     const { users } = this.props;
     const hrefSplited = window.location.href.split('/');
     const editedUserId = parseInt(hrefSplited[hrefSplited.length - 1]);
-    console.log(typeof editedUserId);
     users.forEach((element) => {
-      console.log(typeof element.id);
       if (element.id === editedUserId) {
         this.setState({
           userData: element,
+          formValue: {
+            login: element.login,
+            password: element.password,
+            email: element.email,
+          },
         })
       }
     });
@@ -37,11 +45,11 @@ class Edit extends Component {
 
   editUser(event) {
     event.preventDefault();
-    const { userData } = this.state;
+    const { userData, formValue } = this.state;
     const { users, editUserDispatch } = this.props;
-    let userLogin = document.getElementById('login').value;
-    let userPassword = document.getElementById('password').value;
-    let userEmail = document.getElementById('email').value;
+    let userLogin = formValue.login;
+    let userPassword = formValue.password;
+    let userEmail = formValue.email;
     const usersLogins = users.map(({ login }) => {
       return login;
     });
@@ -66,7 +74,12 @@ class Edit extends Component {
     if (usersLogins.indexOf(userLogin) === -1) {
       editUserDispatch(editedUser, userData.id);
       this.setState({
-        message: 'User succesfuly updated.'
+        message: 'User succesfuly updated.',
+        formValue: {
+          login: '',
+          password: '',
+          email: '',
+        },
       });
     } else {
       this.setState({
@@ -75,17 +88,44 @@ class Edit extends Component {
     }
   }
 
+  onChangeHandler({ target: { value } }, property) {
+    this.setState(({ formValue }) => {
+      formValue[property] = value;
+      return {
+        value: value,
+      }
+    });
+  }
+
   render() {
-    const { message } = this.state;
+    const { message, formValue } = this.state;
     return (
       <Fragment>
         <h2>Edit user</h2>
         <p>{message}</p>
         <form onSubmit={(event) => {this.editUser(event)}}>
-          <FormInput name='login' id='login' label='Login' type='text'/>
-          <FormInput name='password' id='password' label='Password' type='password'/>
-          <FormInput name='email' id='email' label='Email' type='email'/>
-          <button>Add</button>
+          <FormInput
+            name='login'
+            id='login'
+            label='Login'
+            type='text'
+            value={formValue.login}
+            onchange={(event) => {this.onChangeHandler(event, 'login')}}/>
+          <FormInput
+            name='password'
+            id='password'
+            label='Password'
+            type='password'
+            value={formValue.password} 
+            onchange={(event) => {this.onChangeHandler(event, 'password')}}/>
+          <FormInput
+            name='email'
+            id='email'
+            label='Email'
+            type='email' 
+            value={formValue.email}
+            onchange={(event) => {this.onChangeHandler(event, 'email')}}/>
+          <button>Edit</button>
         </form>
         <Link className="link" to="/">Back</Link>
       </Fragment>

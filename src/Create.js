@@ -18,15 +18,22 @@ const mapDispatchToProps = (dispatch) => ({
 class Create extends Component {
   state = {
     message: '',
+    formValue: {
+      login: '',
+      password: '',
+      email: '',
+      role: 'user',
+    },
   }
 
   addNewUser(event) {
     event.preventDefault();
+    const { formValue } = this.state;
     const { addUserDispatch, users } = this.props;
-    const userLogin = document.getElementById('login').value;
-    const userPassword = document.getElementById('password').value;
-    const userRole = document.getElementById('role').value;
-    const userEmail = document.getElementById('email').value;
+    const userLogin = formValue.login;
+    const userPassword = formValue.password;
+    const userRole = formValue.role;
+    const userEmail = formValue.email;
     const usersLogins = users.map(({ login }) => {
       return login;
     });
@@ -57,17 +64,47 @@ class Create extends Component {
     }
   }
 
+  onChangeHandler({ target: { value } }, property) {
+    this.setState(({ formValue }) => {
+      formValue[property] = value;
+      return {
+        value: value,
+      }
+    });
+  }
+
   render() {
-    const { message } = this.state;
+    const { message, formValue } = this.state;
     return (
       <Fragment>
         <h2>Create user</h2>
         <p>{message}</p>
         <form onSubmit={(event) => {this.addNewUser(event)}}>
-          <FormInput name='login' id='login' label='Login' type='text'/>
-          <FormInput name='password' id='password' label='Password' type='password'/>
-          <FormInput name='email' id='email' label='Email' type='email'/>
-          <FormSelect id='role' label='Role'/>
+          <FormInput
+            name='login'
+            id='login'
+            label='Login'
+            type='text'
+            value={formValue.login}
+            onchange={(event) => {this.onChangeHandler(event, 'login')}}/>
+          <FormInput
+            name='password'
+            id='password'
+            label='Password'
+            type='password'
+            value={formValue.password}
+            onchange={(event) => {this.onChangeHandler(event, 'password')}}/>
+          <FormInput
+            name='email'
+            id='email'
+            label='Email'
+            type='email'
+            value={formValue.email}
+            onchange={(event) => {this.onChangeHandler(event, 'email')}}/>
+          <FormSelect
+            id='role'
+            label='Role'
+            onchange={(event) => {this.onChangeHandler(event, 'role')}}/>
           <button>Add</button>
         </form>
         <Link className="link" to="/">Back</Link>
